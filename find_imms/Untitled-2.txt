@@ -1,0 +1,209 @@
+{
+    "0": [
+        "lda 0"
+    ],
+    "1": [
+        "lda 0",
+        "addi 1"
+    ],
+    "2": [
+        "lda 0",
+        "addi 2"
+    ],
+    "3": [
+        "lda 0",
+        "addi 3"
+    ],
+    "4": [
+        "lda 0",
+        "addi 4"
+    ],
+    "5": [
+        "lda 0",
+        "addi 5"
+    ],
+    "6": [
+        "lda 0",
+        "addi 6"
+    ],
+    "7": [
+        "lda 0",
+        "addi 7"
+    ],
+    "8": [
+        "lda 0",
+        "addi 4",
+        "addi 4",
+    ],
+    "9": [
+        "lda 0",
+        "addi 5",
+        "addi 4",
+    ],
+    "10": [
+        "lda 0",
+        "addi 5",
+        "addi 5",
+    ],
+    "11": [
+        "lda 0",
+        "addi 6",
+        "addi 5",
+    ],
+    "12": [
+        "lda 0",
+        "addi 6",
+        "addi 6",
+    ],
+    "13": [
+        "lda 0",
+        "addi 7",
+        "addi 6",
+    ],
+    "14": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+    ],
+    "15": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 1",
+    ],
+    "16": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 2",
+    ],
+    "17": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 3",
+    ],
+    "18": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 4",
+    ],
+    "19": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 5",
+    ],
+    "20": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 6",
+    ],
+    "21": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 7",
+    ],
+    "22": [
+        "lda 0",
+        "addi 6",
+        "addi 5",
+        "add acc",
+    ],
+    "23": [
+        "lda 0",
+        "addi 6",
+        "addi 5",
+        "add acc",
+        "addi 1",
+    ],
+    "24": [
+        "lda 0",
+        "addi 6",
+        "addi 6",
+        "add acc",
+    ],
+    "25": [
+        "lda 0",
+        "addi 6",
+        "addi 6",
+        "add acc",
+        "addi 1",
+    ],
+    "26": [
+        "lda 0",
+        "addi 7",
+        "addi 6",
+        "add acc",
+    ],
+    "27": [
+        "lda 0",
+        "addi 7",
+        "addi 6",
+        "add acc",
+        "addi 1",
+    ],
+    "28": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "add acc",
+    ],
+    "29": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "add acc",
+        "addi 1"
+    ],
+    "30": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 1",
+        "add acc",
+    ]
+    "31": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 1",
+        "add acc",
+        "addi 1",
+    ],
+    "32": [
+        "lda 0",
+        "addi 7",
+        "addi 7",
+        "addi 2",
+        "add acc"
+    ],
+    "255": [
+        "lda 0",
+        "nand acc"
+    ],
+    "255v2": [
+        "lda 0",
+        "addi -1"
+    ],
+
+    1111 1000
+    0001 0000
+    ---------
+    0000 1000
+
+    0001 0100
+    1111 1111
+    ---- ----
+    0001 0011
+
+    1111 0000
+    NAND
+    1111 0000
+    ---- ----
+    0000 1111       
+}
+
