@@ -1,9 +1,11 @@
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+import multiprocessing
 import z3
 
 def find_number_shifts(target: int):
     target_low = target & 0xFF
     target_high = target >> 8
-    for i in range(1, 16):
+    for i in range(2, 16):
         # Define the bit-width for 8-bit numbers
         BIT_WIDTH = 8
         
@@ -53,7 +55,7 @@ def find_number_shifts(target: int):
         if s.check() == z3.sat:
             model = s.model()
 
-            buffer = ['lda 0']
+            buffer = ['lda 0', "sta seg"]
             for i in range(num_operations):
                 op = model.eval(z3.Select(operations, i)).as_long()
                 if op == OP_ADD:
@@ -76,14 +78,28 @@ def find_number_shifts(target: int):
 import tqdm 
 
 
-z3.set_param('parallel.enable', True)
-
-solutions = dict()
-
-for target in tqdm.tqdm(range(0, 2**16)):
+def process_target(target):
     solution = find_number_shifts(target)
-    if solution:
-        solutions[str(target)] = solution
+    return (str(target), solution) if solution else None
 
-import json
-json.dump(solutions, open("solutions.json", "w"), indent=2)
+def main():
+    solutions = dict()
+
+    # Using ThreadPoolExecutor to parallelize
+    with ProcessPoolExecutor() as executor:
+        results = list(tqdm.tqdm(
+            executor.map(process_target, range(0, 2**16)),
+            total=2**16
+        ))
+
+    # Collect non-None results into the solutions dictionary
+    for result in results:
+        if result:
+            solutions[result[0]] = result[1]
+
+    return solutions
+
+if __name__ == "__main__":
+    final_solutions = main()
+    import json
+    json.dump(final_solutions, open("solutions.json", "w"), indent=2)
