@@ -1,0 +1,176 @@
+{
+  "1024": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi -4"
+  ],
+  "1025": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi -3"
+  ],
+  "1026": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi -2"
+  ],
+  "1027": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi -1"
+  ],
+  "1028": [
+    "lda 0",
+    "addi 4",
+    "sta seg"
+  ],
+  "1029": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 1"
+  ],
+  "1030": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 2"
+  ],
+  "1031": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 3"
+  ],
+  "1032": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "add acc"
+  ],
+  "1033": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 5"
+  ],
+  "1034": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 6"
+  ],
+  "1035": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 7"
+  ],
+  "1036": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "add acc",
+    "addi 4"
+  ],
+  "1037": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "add acc",
+    "addi 5"
+  ],
+  "1038": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 3",
+    "add acc"
+  ],
+  "1039": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 7",
+    "addi 4"
+  ],
+  "1040": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 4",
+    "add acc"
+  ],
+  "1041": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 7",
+    "addi 6"
+  ],
+  "1042": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 5",
+    "add acc"
+  ],
+  "1043": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 2",
+    "add acc",
+    "addi 7"
+  ],
+  "1044": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 6",
+    "add acc"
+  ],
+  "1045": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 7",
+    "add acc",
+    "addi -1"
+  ],
+  "1046": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 7",
+    "add acc"
+  ],
+  "1047": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 5",
+    "add acc",
+    "addi 5"
+  ],
+  "1048": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 2",
+    "addi 6",
+    "add acc"
+  ],
+  "1049": [
+    "lda 0",
+    "addi 4",
+    "sta seg",
+    "addi 5",
+    "add acc",
+    "addi 7"
+  ]
+}

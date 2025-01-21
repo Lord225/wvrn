@@ -16,8 +16,6 @@ solver = Solver()
 # Function to compute instruction lengths based on immediates (16-bit values)
 lengths_map = Function('lengths_map', BitVecSort(16), BitVecSort(16))
 
-
-
 start_adress = 0x0000
 # layout:
 # single value: contigous block of instructions with label at the end
