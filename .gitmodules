@@ -1,0 +1,3 @@
+[submodule "imms-generator/WVRN-constants-solver"]
+	path = imms-generator/WVRN-constants-solver
+	url = https://github.com/TestkaJakub/WVRN-constants-solver
