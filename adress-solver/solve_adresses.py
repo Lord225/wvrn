@@ -1,9 +1,9 @@
-from z3 import *
+from z3 import Solver, BitVec, BitVecSort, Function, And, sat
 import json
 
 # Load the immediate length mapping (16-bit immediate values with lengths)
 # Assume imms.json has a structure like {"0": [2, 3, ...], "1": [4, 5, ...]}.
-imms = json.load(open('./imms.json'))
+imms = json.load(open('./imms-generator/solutions.json'))
 
 # Convert the immediate mapping to handle 16-bit values
 imms = {int(k): len(v) for k, v in imms.items()}
@@ -65,17 +65,14 @@ for i in range(num_instructions):
 for i in range(num_instructions):
     solver.add(And(bufferNops[i] >= 0, bufferNops[i] <= 1))
 
-# Map for labels to their positions in the program
 label_positions = {}
 
 # Iterate over the problem layout and set up constraints
 for i, instr in enumerate(problem_layout):
-    if len(instr) == 1:
-        # Single value: Contiguous block of instructions, label at the end
+    if len(instr) == 1: # instruction block
         length = instr[0]
         solver.add(lengths[i] == length)  # Fixed length
-    elif len(instr) == 2:
-        # Double value: Contiguous block with a jump to a label
+    elif len(instr) == 2: # instruction block with jump
         block_length, jump_label_idx = instr
         # lenght depends on lengths_map. we take the length depending on the adress of the jump
 
