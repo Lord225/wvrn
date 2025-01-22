@@ -1,4 +1,4 @@
-from z3 import Solver, BitVec, BitVecSort, Function, And, sat
+from z3 import Solver, BitVec, BitVecSort, BitVecVal, Function, And, sat
 import json
 from dataclasses import dataclass, field
 from typing import Optional
@@ -41,6 +41,7 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     max_adress = starting_adress+calc_max_adress(problem)
 
     solver = Solver()
+    solver.set("smt.phase_selection", 5)
 
     # this function maps jumps immediates to their respective lengths in bytecode
     lengths_map = Function('lengths_map', BitVecSort(16), BitVecSort(16))
@@ -51,9 +52,9 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     num_sectors = len(problem)
 
     # adresses are the positions of the instructions in the program
-    addresses = [BitVec(f"address_{i}", 16) for i in range(num_sectors)]
+    addresses  = [BitVec(f"address_{i}", 16) for i in range(num_sectors)]
     # lengths are the lengths of the instructions
-    lengths = [BitVec(f"length_{i}", 16) for i in range(num_sectors)]
+    lengths    = [BitVec(f"length_{i}", 16) for i in range(num_sectors)]
     # bufferNops are the number of nops added to make all problems solveable
     bufferNops = [BitVec(f"bufferNo_{i}", 16) for i in range(num_sectors)]
 
@@ -94,6 +95,9 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
                 block_length, jump_label_idx = instr
                 solver.add(lengths[i] == (lengths_map(addresses[jump_label_idx]) + block_length + bufferNops[i]))
                 label_positions[i] = jump_label_idx  # Store the label index for the jump
+            case 3:  # instruction block with prespecified jump adress
+                block_length, _, jump_adress = instr
+                solver.add(lengths[i] == (lengths_map(jump_adress) + block_length + bufferNops[i]))
             case _:
                 raise ValueError(f"Unexpected instruction format at index {i}: {instr}")
             
@@ -101,7 +105,8 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     for i in range(num_sectors - 1):
         solver.add(addresses[i + 1] == addresses[i] + lengths[i])
 
-    solver.set(timeout=timeout) 
+    if timeout:
+        solver.set(timeout=timeout) 
     if solver.check() == sat:
         model = solver.model()        
         solution = [] # type: list[SolutionSection]
@@ -133,45 +138,48 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
         return solution
     else:
         return None
-    
-def solve_adresses(program, starting_adress, buffer = 1):
+
+def solve_adresses(program, starting_adress, timeout=2000):
     if len(program) <= 25:
-        solution = try_solve_adresses(program, starting_adress, buffer=0, timeout=2000)
+        solution = try_solve_adresses(program, starting_adress, buffer=0, timeout=timeout)
         if solution:
             return solution
+        for i in range(1, 5):
+            solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=timeout)
+            if solution:
+                return solution
+        else:
+            return try_solve_adresses(program, starting_adress, buffer=14, timeout=None)
+
     else:
-        solution = try_solve_adresses(program, starting_adress, buffer=1, timeout=2000)
+        solution = try_solve_adresses(program, starting_adress, buffer=1, timeout=timeout)
         if solution:
             return solution
 
-    for i in range(buffer, buffer+10):
-        solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=10_000)
-        if solution:
-            return solution
-    else:
-        return None
-
+        for i in range(2, 6):
+            solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=timeout)
+            if solution:
+                return solution
+        else:
+            return try_solve_adresses(program, starting_adress, buffer=14, timeout=None)
 
 if __name__ == "__main__":
-    # program = [
-    #     (1000,  ),
-    #     (1000, 3),
-    #     (1000, 0),
-    #     (1000,  ),
-    # ]
-
     # generate long program
     import random
-    size = 25
+
+    size = 100
     program = []
     for i in range(size):
         if random.random() < 0.5:
-            program.append((10, ))
+            program.append((20, ))
         else:
-            program.append((10, random.randint(0, size-1)))
+            program.append((20, random.randint(i-3, i)))
+    
+    jumps = sum(1 for instr in program if len(instr) == 2)
+    print(jumps)
 
     starting_adress = 0
-    solution = solve_adresses(program, starting_adress, buffer=2)
+    solution = try_solve_adresses(program, starting_adress, buffer=1, timeout=None)
 
     if solution:
         print("Solution Found:")

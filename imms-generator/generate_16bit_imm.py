@@ -20,7 +20,7 @@ def find_number_shifts(target: int):
         OP_ADD = 0
         OP_SHIFT = 1
         OP_NEG = 2
-        OP_LDA0 = 3
+        OP_LDA0  = 3
         OP_SEG = 4
 
         # Define an array to hold intermediate results
