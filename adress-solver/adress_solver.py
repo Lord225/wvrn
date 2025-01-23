@@ -140,40 +140,28 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
         return None
 
 def solve_adresses(program, starting_adress, timeout=2000):
-    if len(program) <= 25:
-        solution = try_solve_adresses(program, starting_adress, buffer=0, timeout=timeout)
+    solution = try_solve_adresses(program, starting_adress, buffer=1, timeout=timeout)
+    if solution:
+        return solution
+    for i in range(1, 5):
+        solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=timeout)
         if solution:
             return solution
-        for i in range(1, 5):
-            solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=timeout)
-            if solution:
-                return solution
-        else:
-            return try_solve_adresses(program, starting_adress, buffer=14, timeout=None)
-
     else:
-        solution = try_solve_adresses(program, starting_adress, buffer=1, timeout=timeout)
-        if solution:
-            return solution
+        return try_solve_adresses(program, starting_adress, buffer=14, timeout=None)
 
-        for i in range(2, 6):
-            solution = try_solve_adresses(program, starting_adress, buffer=i, timeout=timeout)
-            if solution:
-                return solution
-        else:
-            return try_solve_adresses(program, starting_adress, buffer=14, timeout=None)
 
 if __name__ == "__main__":
     # generate long program
     import random
 
-    size = 100
+    size = 20
     program = []
     for i in range(size):
         if random.random() < 0.5:
             program.append((20, ))
         else:
-            program.append((20, random.randint(i-3, i)))
+            program.append((20, random.randint(i-2, i+2)))
     
     jumps = sum(1 for instr in program if len(instr) == 2)
     print(jumps)
