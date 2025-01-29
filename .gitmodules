@@ -1,3 +1,6 @@
 [submodule "imms-generator/WVRN-constants-solver"]
 	path = imms-generator/WVRN-constants-solver
 	url = https://github.com/TestkaJakub/WVRN-constants-solver
+[submodule "lord-s-asm-for-mc"]
+	path = lord-s-asm-for-mc
+	url = https://github.com/Lord225/Lord-s-asm-for-mc
