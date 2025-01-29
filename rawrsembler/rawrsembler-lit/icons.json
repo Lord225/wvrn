@@ -1,0 +1,11 @@
+{
+  "iconDefinitions": {
+    "wvrn-file-icon": {
+      "fontCharacter": "🐱",
+      "fontId": "default"
+    }
+  },
+  "fileExtensions": {
+    "wvrn": "wvrn-file-icon"
+  }
+}

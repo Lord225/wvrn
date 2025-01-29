@@ -99,7 +99,7 @@ if solver.check() == sat:
         if i in label_positions:
             jump_label_idx = label_positions[i]
             jump_addr = model[addresses[jump_label_idx]]
-            print(f"Instruction {i}: Jump to address = {jump_addr}, Jump Len = {length.as_long()-problem_layout[i][0]}, buf={buf}, Length = {problem_layout[i][0]}, Len = {length}")
+            print(f"Instruction {i}: Jump to address = {jump_addr}, Jump Len = {length.as_long()-problem_layout[i][0]}, buf={buf}, Length = {problem_layout[i][0]}, Len = {length}") # type: ignore
         else:
             print(f"Instruction {i}: Address = {addr}, Len = {length}")
 

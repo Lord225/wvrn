@@ -1,0 +1,14 @@
+#define HELLO_WORLD
+
+#ifdef HELLO_WORLD
+
+.ENTRY
+LABEL:
+    lim 0
+    lim 0
+    lim 0
+    brc true LABEL
+#endif
+
+
+    
