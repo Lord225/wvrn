@@ -69,6 +69,8 @@ def compile():
     format_pipeline = core.pipeline.make_format_pipeline()            # Format
 
     start_file = config.input
+    
+    override_debug()
 
     profile = core.profile.profile.load_profile_from_file('wvrn.jsonc', True)
 

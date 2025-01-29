@@ -3,26 +3,26 @@
 #ifdef HELLO_WORLD
 
 .ENTRY
-    nop   // sekcja 1
+    nop
 LABEL:
     nop
-    nop 
     nop
     nop
-    nop
-    nop 
-    nop
+    jmp LABEL
     nop
     nop
-    brc true LABEL // sekcja 3
+    jmp LABEL2
+    nop
+    nop
+    jmp LABEL
 LABEL2:
-    nop 
     nop
     nop
     nop
-    nop 
     nop
-    nop 
+    nop
+    nop
+    nop
 #endif
 
 
