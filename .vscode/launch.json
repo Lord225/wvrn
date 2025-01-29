@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Rawrsemblerr",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./rawrsembler/compile.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--debug", "-i", "./rawrsembler/src/program.wvrn"
+            ],
+            "justMyCode": false
+        }
+    ]
+}

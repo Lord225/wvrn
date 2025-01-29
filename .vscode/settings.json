@@ -1,0 +1,14 @@
+{
+    "python.testing.pytestArgs": [
+        "rawrsembler"
+    ],
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./rawrsembler",
+        "-p",
+        "*_test.py"
+    ]
+}

@@ -38,6 +38,13 @@ args = parser.parse_args()
 
 DEBUG_MODE = args.debug
 
+config.override_from_dict(
+    {
+        'input': args.input,
+        'output': args.output
+    }
+)
+
 def override_debug():
     if DEBUG_MODE:
         config.override_from_dict(

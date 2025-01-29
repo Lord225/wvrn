@@ -58,7 +58,7 @@ def find_labels(program, context: Context):
                 raise error.ParserError(line_obj.line_index_in_file, f"Cannot find label '{label}'")
             if label['label'] in context.labels:
                 raise error.ParserError(line_obj.line_index_in_file, f"Label '{label['label']}' is not unique")
-            context.labels[label['label']] = len(output)+1
+            context.labels[label['label']] = len(output)
         else:
             output.append(line_obj)
     return output, context

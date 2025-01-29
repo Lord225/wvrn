@@ -24,6 +24,14 @@ def translate(program, profile: Profile):
     program, context = core.pipeline.exec_pipeline(partial_save_pipeline, program, context, progress_bar_name=None)
     return program, context
 
+def parse(program, profile: Profile):
+    if isinstance(program[0], str):
+        program = [Line(line, line_index_in_file=-1) for line in program]
+
+    parser_pipeline = core.pipeline.make_parser_pipeline()
+    program, context = core.pipeline.exec_pipeline(parser_pipeline, program, Context(profile), progress_bar_name=None)
+    return program, context
+
 def gather_instructions(program, adressing: AdressingMode):
     output = dict()
     debug = dict()
@@ -53,7 +61,7 @@ def build_schematic(program, profile: Profile):
     if schematic is None:
         raise error.ProfileLoadError("Schematic definition is required for building one")
 
-    blank = nbt.NBTFile(profile.schematic.blank_name)
+    blank = nbt.NBTFile(profile.schematic.blank_name) # type: ignore
     file = core.save.exporter.generate_schematic(data, schematic.layout, blank, schematic.low_state, schematic.high_state)
 
     return file
@@ -89,7 +97,7 @@ def send_schematic(schematic: nbt.NBTFile, nick=None, passwd=None, phpsessid=Non
     if nick is not None and passwd is not None:
         response = requests.post('https://api.redstonefun.pl', data=data, files=files)
     elif phpsessid is not None:
-        response = requests.post('https://api.redstonefun.pl', files=files, cookies=cookies)
+        response = requests.post('https://api.redstonefun.pl', files=files, cookies=cookies) # type: ignore
     else:
         raise error.CompilerError(None, "You need to pass either nick and passwd or sessionId")
     error_code = process_response(response)
