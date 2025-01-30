@@ -1,7 +1,7 @@
 # remove alias from $profile
-if (Select-String -Path $PROFILE -Pattern "lords-asm-for-mc-begin") {
-    Write-Host "Removing installation of 'lords-asm-for-mc' from $PROFILE."
+if (Select-String -Path $PROFILE -Pattern "rawrsembler-begin") {
+    Write-Host "Removing installation of 'rawrsembler' from $PROFILE."
     $content = Get-Content $PROFILE -Raw
-    $content = $content -replace "(?ms)(\# lords-asm-for-mc-begin)(.*?)(\# lords-asm-for-mc-end)\s*", ""
+    $content = $content -replace "(?ms)(\# rawrsembler-begin)(.*?)(\# rawrsembler)\s*", ""
     Set-Content $PROFILE $content
 }
