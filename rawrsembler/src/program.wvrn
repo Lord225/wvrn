@@ -6,23 +6,15 @@
 //    jmp LABEL
 
 .ENTRY
-nop    //0
-LABEL:
-nop    //1
 nop
-nop
-nop
-nop
-nop
-nop
-nop
-nop
-brc true LABEL //% Test
 LABEL2:
-nop
-nop
-nop
-nop
-nop
-nop
+brc true LABEL //% brc
+addi 1         //% adi
+addi 1         //% adi
+addi 1         //% adi
+brc true LABEL2
+brc true LABEL //% this jump
+addi 1         //% adi
+addi 1         //% adi
+LABEL:
 nop

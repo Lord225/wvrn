@@ -18,6 +18,11 @@ def remove_comments(lines: List[Line], context: Context):
                 pos = line.line.find("//%")
                 if pos > 0:
                     line.comment = line.line[pos+3:].strip()
+                else:
+                    line.comment = None
+            else:
+                line.comment = None
+                
             line.line = line.line[:line.line.find("//")]
             line.line = line.line[:line.line.find(";")] 
     return lines

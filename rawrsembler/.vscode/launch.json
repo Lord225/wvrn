@@ -5,10 +5,10 @@
             "name": "Debug Rawrsemblerr",
             "type": "debugpy",
             "request": "launch",
-            "program": "./rawrsembler/compile.py",
+            "program": "./compile.py",
             "console": "integratedTerminal",
             "args": [
-                "--debug", "-i", "./rawrsembler/src/program.wvrn"
+                "--debug", "-i", "./src/program.wvrn"
             ],
             "justMyCode": false
         }
