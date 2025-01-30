@@ -1,8 +1,28 @@
-// TODO DEBUG
+// .ENTRY
+//    nop
+// LABEL:
+//    nop
+//    jmp LABEL
+//    jmp LABEL
 
 .ENTRY
-    nop
+nop    //0
 LABEL:
-    nop
-    jmp LABEL
-    jmp LABEL
+nop    //1
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+brc true LABEL //% Test
+LABEL2:
+nop
+nop
+nop
+nop
+nop
+nop
+nop

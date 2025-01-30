@@ -10,10 +10,14 @@ def remove_comments(lines: List[Line], context: Context):
             # Check if it's inside a string
             if line.line.find('"') < line.line.find("//") and line.line.find('"') > 0:
                 continue
+            # check for ;
+            if line.line.find('"') < line.line.find(";") and line.line.find('"') > 0:
+                continue
 
             if config.save_comments_after_lines:
                 pos = line.line.find("//%")
                 if pos > 0:
                     line.comment = line.line[pos+3:].strip()
             line.line = line.line[:line.line.find("//")]
+            line.line = line.line[:line.line.find(";")] 
     return lines

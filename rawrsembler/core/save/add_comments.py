@@ -40,7 +40,7 @@ def add_comments(program, context: Context):
 
         line.formatted_comments.extend(['']*formatted_lenght_diffrence)
         line.formatted_comments.append(generate_comment(line))
-        line.formatted_comments.append(get_line_labels(labels, i+1))
+        line.formatted_comments.append(get_line_labels(labels, i))
         if config.show_adresses:
             line.formatted_comments.append(str(line.physical_adress) if 'physical_adress' in line else "None")
         if config.save_comments_after_lines:

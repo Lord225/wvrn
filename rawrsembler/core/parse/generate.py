@@ -7,7 +7,7 @@ import math
 import random
 import hashlib
 import bitvec
-from bitvec.alias import *
+from bitvec.alias import *  # type: ignore
 
 def eval_space(args, evaluation):
     locals().update(args)
