@@ -6,7 +6,7 @@ except ModuleNotFoundError as module:
 
 import argparse
 import logging
-import pprint
+import sys
 import core.adress_solver
 import core.error as error
 import core.config as config
@@ -67,6 +67,10 @@ def override_debug():
 
 override_debug()
 
+if config.save == "pip":
+    # redirect output
+    sys.stdout = sys.stderr
+
 def compile():
     load_preproces_pipeline = core.pipeline.make_preproces_pipeline() # Load & Preprocess
     parse_pipeline = core.pipeline.make_parser_pipeline()             # Parse & Extract arguments
@@ -82,16 +86,14 @@ def compile():
     output, context = core.pipeline.exec_pipeline(load_preproces_pipeline, start_file, contextlib.Context(profile), progress_bar_name='Loading')
     if context.profile_name:
         config.override_from_dict(profile=context.profile_name)
-    if config.init is not None:
-        config.override_from_file(config.init)
+
+    # set profile_name
+    context.profile_name = 'wvrn.jsonc'
 
     # Load profile and pass it to context
     override_debug()
 
     output, context = core.pipeline.exec_pipeline(parse_pipeline, output, context, progress_bar_name='Parsing')
-
-    pprint.pprint(output)
-    pprint.pprint(context.__dict__)
 
     solve_wvrn = \
     [

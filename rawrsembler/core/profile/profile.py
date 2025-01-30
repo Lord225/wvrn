@@ -211,7 +211,7 @@ class Profile:
         if "SCHEMATIC" in self.profile and self.profile["SCHEMATIC"] is not None:
             self.schematic = SchematicInfo(self.profile, self.base_folder)
         else:
-            logging.warning("Profile does not have SCHEMATIC section, schematic export will be disabled.")
+            logging.info("Profile does not have SCHEMATIC section, schematic export will be disabled.")
             self.schematic = None
 
     def __selfcheck(self):

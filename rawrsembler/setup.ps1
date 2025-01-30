@@ -35,11 +35,15 @@ $venv_python = Join-Path $venv_dir "Scripts\python.exe"
 $compile = Join-Path $root "rawr.py"
 "function rawr { `$input | & `"$venv_python`" `"$compile`" @args }" | Out-File -FilePath $PROFILE -Append -Encoding ASCII
 
+# Add alias to get-wvrn-bin.py
+$compile = Join-Path $root "./tools/get-wvrn-bin.py"
+"function to-wve { `$input | & `"$venv_python`" `"$compile`" @args }" | Out-File -FilePath $PROFILE -Append -Encoding ASCII
+
 # # Add alias to send.py
 # $send = Join-Path $root "tools/send.py"
 # "function rfsend { `$input | & `"$venv_python`" `"$send`" @args }" | Out-File -FilePath $PROFILE -Append -Encoding ASCII
 
-Write-Host "Alias 'rawr' created in $PROFILE"
+Write-Host "Alias 'rawr' and 'to-wve' created in $PROFILE"
 
 # Add $root to the PATH, if not already there
 if ($env:PATH -notcontains $root) {

@@ -11,6 +11,7 @@ LABEL2:
 brc true LABEL //% brc
 addi 1         //% adi
 addi 1         //% adi
+#debug brakepoint
 addi 1         //% adi
 brc true LABEL2
 brc true LABEL //% this jump
