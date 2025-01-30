@@ -20,6 +20,7 @@ or
 This script will:
 🐾 Create a virtual environment (venv)
 🐾 Add the alias rawr to python rawr.py (because every good kit needs a shortcut!)
+🐾 Add the alias to-wve to python ./tools/get-wvrn-bin.py
 🐾 Install a lint extension for VS Code to keep your code looking purr-fect
 
 ## 🐾 Uninstall
