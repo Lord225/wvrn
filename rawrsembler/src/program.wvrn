@@ -1,21 +1,21 @@
-// .ENTRY
-//    nop
-// LABEL:
-//    nop
-//    jmp LABEL
-//    jmp LABEL
-
 .ENTRY
-nop
-LABEL2:
-brc true LABEL //% brc
-addi 1         //% adi
-addi 1         //% adi
-#debug brakepoint
-addi 1         //% adi
-brc true LABEL2
-brc true LABEL //% this jump
-addi 1         //% adi
-addi 1         //% adi
+   nop
 LABEL:
-nop
+   nop
+   jmp LABEL //% this jump
+   jmp LABEL //% that jump
+
+; .ENTRY
+; nop
+; LABEL2:
+; brc true LABEL //% brc
+; addi 1         //% adi
+; addi 1         //% adi
+; #debug brakepoint
+; addi 1         //% adi
+; brc true LABEL2
+; brc true LABEL //% this jump
+; addi 1         //% adi
+; addi 1         //% adi
+; LABEL:
+; nop
