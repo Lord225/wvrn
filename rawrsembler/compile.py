@@ -49,7 +49,7 @@ def override_debug():
     if DEBUG_MODE:
         config.override_from_dict(
             run = True,
-            save = "bin",
+            save = "pad",
             comments = True,
             onerror = 'None',
             debug = True,
@@ -61,6 +61,7 @@ def override_debug():
         )
         logging.debug("Logging is set to debug")
 
+override_debug()
 
 def compile():
     load_preproces_pipeline = core.pipeline.make_preproces_pipeline() # Load & Preprocess
@@ -75,7 +76,6 @@ def compile():
     profile = core.profile.profile.load_profile_from_file('wvrn.jsonc', True)
 
     output, context = core.pipeline.exec_pipeline(load_preproces_pipeline, start_file, contextlib.Context(profile), progress_bar_name='Loading')
-
     if context.profile_name:
         config.override_from_dict(profile=context.profile_name)
     if config.init is not None:
@@ -97,7 +97,13 @@ def compile():
 
     output, context = core.pipeline.exec_pipeline(solve_wvrn, output, context, progress_bar_name='Solving adresses')
 
+    output, context = core.pipeline.exec_pipeline(parse_pipeline, output, context, progress_bar_name='Parsing')
+ 
+    output, context = core.pipeline.exec_pipeline(format_pipeline, output, context, progress_bar_name='Formatting')
 
+    output, context = core.pipeline.exec_pipeline(save_pipeline, output, context, progress_bar_name='Saving')
+
+    
 
 def on_compilation_error(err: error.CompilerError):
     print("*"*50) 

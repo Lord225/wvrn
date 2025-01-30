@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import logging
+import pprint
 from typing import Optional
 from core.context import Context
 import core.parse.tokenize as tokenize
@@ -7,6 +8,8 @@ import core.error as error
 import core.config as config 
 from z3 import Solver, BitVec, BitVecSort, BitVecVal, Function, And, sat
 import json
+
+from core.load.base import Line
 
 BRC_COMMANDS = [
     "brc carry",
@@ -53,6 +56,11 @@ def calculate_label_segments(program, context):
         if i in labels.values():
             for label in find_key_by_value(i, labels):
                 label_segments[label] = line.segment
+    if len(program) > 0:
+        for label in labels:
+            if label not in label_segments:
+                next_index = max(label_segments.values()) + 1
+                label_segments[label] = next_index
     return label_segments
 
 
@@ -69,8 +77,20 @@ def calculate_segment_lengths(program):
     segment_lengths[current_segment] = current_length
     return segment_lengths
 
+@dataclass
+class ProblemSegmentLabels:
+    length: int
+    segment_id: int
+    jump_label: Optional[int] = None
 
-def create_problem_layout(program, segment_lengths, label_segments):
+@dataclass
+class ProblemSegmentIndexes:
+    length: int
+    segment_id: int
+    jump_index: Optional[int] = None
+
+
+def create_problem_layout(program, segment_lengths, label_segments) -> list[ProblemSegmentLabels]:
     problem = []
     current_segment = max(segment_lengths.keys())
     for i, line in enumerate(program):
@@ -78,17 +98,17 @@ def create_problem_layout(program, segment_lengths, label_segments):
             if line.mached_command[0] in BRC_COMMANDS:
                 addr = line.mached_command[1]["addr"]
                 problem.append(
-                    (
-                        segment_lengths[current_segment],
-                        current_segment,
-                        label_segments[addr],
+                    ProblemSegmentLabels(
+                        length=segment_lengths[current_segment],
+                        segment_id=current_segment,
+                        jump_label=label_segments[addr],
                     )
                 )
             else:
                 problem.append(
-                    (
-                        segment_lengths[current_segment],
-                        current_segment,
+                    ProblemSegmentLabels(
+                        length=segment_lengths[current_segment],
+                        segment_id=current_segment,
                     )
                 )
             current_segment = line.segment
@@ -96,70 +116,77 @@ def create_problem_layout(program, segment_lengths, label_segments):
     if line.mached_command[0] in BRC_COMMANDS:
         addr = line.mached_command[1]["addr"]
         problem.append(
-            (
-                segment_lengths[current_segment], 
-                current_segment, 
-                label_segments[addr],
+            ProblemSegmentLabels(
+                length=segment_lengths[current_segment],
+                segment_id=current_segment,
+                jump_label=label_segments[addr],
             )
         )
     else:
         problem.append(
-            (
-                segment_lengths[current_segment],
-                current_segment,
+            ProblemSegmentLabels(
+                length=segment_lengths[current_segment],
+                segment_id=current_segment,
             )
         )
 
     return problem
 
 
-def translate_problem_layout(problem):
-    def find_section_by_id(id):
-        for i, p in enumerate(problem):
-            if p[1] == id:
-                return i
-
+def translate_problem_layout(problem: list[ProblemSegmentLabels]) -> list[ProblemSegmentIndexes]:
     translated_problem = []
-    for i, instr in enumerate(problem):
-        if len(instr) == 2:
-            translated_problem.append((instr[0],))
-        elif len(instr) == 3:
-            translated_problem.append((instr[0], find_section_by_id(instr[2])))
+    for instr in problem:
+        if instr.jump_label is None:
+            translated_problem.append(
+                ProblemSegmentIndexes(
+                    length=instr.length,
+                    segment_id=instr.segment_id
+                )
+            )
+        else:
+            translated_problem.append(
+                ProblemSegmentIndexes(
+                    length=instr.length,
+                    segment_id=instr.segment_id,
+                    jump_index=next(
+                        i for i, p in enumerate(problem) if p.segment_id == instr.jump_label
+                    )
+                )
+            )
     return translated_problem
 
 
 imms = json.load(open('./rawrsembler/wvrn/solutions-16bit.json'))
-imms = {int(k): len(v) for k, v in imms.items()}
+imms =  {int(k): v for k, v in imms.items()}
+imms_lens = {int(k): len(v) for k, v in imms.items()}
 
-LONGEST_IMMEDIATE = max(imms.values())
-SHORT_IMMEDIATE = min(imms.values())
+LONGEST_IMMEDIATE = max(imms_lens.values())
+SHORT_IMMEDIATE = min(imms_lens.values())
 MAX_JUMP_LENGHT = LONGEST_IMMEDIATE + 1
 MIN_JUMP_LENGHT = SHORT_IMMEDIATE + 1
 
-def transform_program_into_instruction_sections(program):
-    return [
-        (1000,  ),
-        (1000, 3),
-        (1000, 0),
-        (1000,  ),
-    ]
-
 @dataclass
 class SolutionSection:
+    # starting adress of this section
     address: int
+    # lenght of this section in bytes (including jumps and buffer)
     length: int
+    # padding nops to make problem solvable
     buffer: int
+    # physical adress of the jump target
     jump_to: Optional[int] = field(default=None)
+    # lenght of the jump instruction alone (without buffer and other instructions)
+    # basically lenght of 16 bit imm + 1 
     jump_lenght: Optional[int] = field(default=None)
 
-def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[SolutionSection] | None:
-    def calc_max_adress(layout):
+def try_solve_adresses(problem: list[ProblemSegmentIndexes], starting_adress, buffer, timeout) -> list[SolutionSection] | None:
+    def calc_max_adress(layout: list[ProblemSegmentIndexes]):
         max_adress = 0
         for instr in layout:
-            if len(instr) == 1:
-                max_adress += instr[0]
-            elif len(instr) == 2:
-                max_adress += instr[0] + MAX_JUMP_LENGHT
+            if instr.jump_index is None:
+                max_adress += instr.length
+            else:
+                max_adress += instr.length + MAX_JUMP_LENGHT
         return max_adress + 1
     
     min_adress = starting_adress
@@ -172,7 +199,7 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     lengths_map = Function('lengths_map', BitVecSort(16), BitVecSort(16))
 
     for i in range(min_adress, max_adress):
-        solver.add(lengths_map(i) == (imms[i] + 1))
+        solver.add(lengths_map(i) == (imms_lens[i] + 1))
 
     num_sectors = len(problem)
 
@@ -191,20 +218,20 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     for i, instr in enumerate(problem):
         solver.add(addresses[i] <= current_adress)
         #print(f"Instruction {i} has adress atleast {current_adress}")  
-        if len(instr) == 1:
-            current_adress += instr[0]
-        elif len(instr) == 2:
-            current_adress += instr[0] + MAX_JUMP_LENGHT
+        if instr.jump_index is None:
+            current_adress += instr.length
+        else:
+            current_adress += instr.length + MAX_JUMP_LENGHT
     
     # set lower low bound for adresses
     current_adress = starting_adress
     for i, instr in enumerate(problem):
         solver.add(addresses[i] >= current_adress)
         #print(f"Instruction {i} has adress atmost {current_adress}")
-        if len(instr) == 1:
-            current_adress += instr[0]
-        elif len(instr) == 2:
-            current_adress += instr[0] + MIN_JUMP_LENGHT    
+        if instr.jump_index is None:
+            current_adress += instr.length
+        else:
+            current_adress += instr.length + MIN_JUMP_LENGHT    
 
     for i in range(num_sectors):
         solver.add(And(bufferNops[i] >= 0, bufferNops[i] <= buffer))
@@ -212,19 +239,11 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
     label_positions = {}
 
     for i, instr in enumerate(problem):
-        match len(instr):
-            case 1:  # instruction block
-                length = instr[0]
-                solver.add(lengths[i] == length)  # Fixed length
-            case 2:  # instruction block with jump
-                block_length, jump_label_idx = instr
-                solver.add(lengths[i] == (lengths_map(addresses[jump_label_idx]) + block_length + bufferNops[i]))
-                label_positions[i] = jump_label_idx  # Store the label index for the jump
-            case 3:  # instruction block with prespecified jump adress
-                block_length, _, jump_adress = instr
-                solver.add(lengths[i] == (lengths_map(jump_adress) + block_length + bufferNops[i]))
-            case _:
-                raise ValueError(f"Unexpected instruction format at index {i}: {instr}")
+        if instr.jump_index is None:  # instruction block
+            solver.add(lengths[i] == instr.length)  # Fixed length
+        else:  # instruction block with jump
+            solver.add(lengths[i] == (lengths_map(addresses[instr.jump_index]) + instr.length + bufferNops[i])) # type: ignore
+            label_positions[i] = instr.jump_index  # Store the label index for the jump
             
     solver.add(addresses[0] == starting_adress)
     for i in range(num_sectors - 1):
@@ -242,7 +261,7 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
             if i in label_positions:
                 jump_label_idx = label_positions[i]
                 jump_addr = model[addresses[jump_label_idx]].as_long() # type: ignore
-                jump_lenght = length-problem[i][0]
+                jump_lenght = length-problem[i].length - buffer
 
                 section = SolutionSection(
                     address=addres,
@@ -265,11 +284,11 @@ def try_solve_adresses(problem, starting_adress, buffer, timeout) -> list[Soluti
         return None
 
 def find_adresses(problem, starting_adress, timeout=2000):
-    logging.debug(f"Finding adresses for program with {len(problem)} instructions timeout: {timeout}, starting adress: {starting_adress}")
+    logging.debug(f"Resolving adresses for program with {len(problem)} sections, timeout: {timeout}, starting adress: {starting_adress}")
     solution = try_solve_adresses(problem, starting_adress, buffer=1, timeout=timeout)
     if solution:
         return solution
-    for i in range(1, 5):
+    for i in range(2, 5):
         logging.debug(f"Trying with buffer {i}, timeout: {timeout}")
         solution = try_solve_adresses(problem, starting_adress, buffer=i, timeout=timeout)
         if solution:
@@ -279,8 +298,78 @@ def find_adresses(problem, starting_adress, timeout=2000):
         return try_solve_adresses(problem, starting_adress, buffer=14, timeout=None)
 
 
-def apply_phisical_adresses_to_program(program, solution: list[SolutionSection], context: Context):
-    pass
+
+def get_jump_sequence(target, brc_instruction: Line):
+    if target < 0 or target >= 2**16:
+        raise error.CompilerError(None, f"Invalid jump target: {target}")
+    
+    if brc_instruction.mached_command[0] not in BRC_COMMANDS:
+        raise error.CompilerError(None, "Logic error: Jumps solution is in par with problem")
+    
+    cond = brc_instruction.tokenized[1]
+
+    jump_command = f"bt {cond}"
+    
+    imm_load = imms[target]
+
+    return imm_load + [jump_command]
+    
+
+def find_physical_adresses(program, solution: list[SolutionSection], context: Context):
+    program_index = 0
+    new_program = []
+    fill = str(context.get_profile().fill)
+    for section in solution:
+        start_adress = section.address
+        current_adress = start_adress 
+        lenght = section.length
+        buffer = section.buffer
+        jump_len = section.jump_lenght if section.jump_lenght else 0
+
+        for _ in range(start_adress, start_adress+lenght-jump_len-buffer):
+            line = program[program_index]
+            line["physical_adress"] = current_adress
+            program_index += 1
+            current_adress += 1
+            new_program.append(line)
+
+        if jump_len:
+            jump_instruction = program[program_index]
+            
+            if jump_instruction.mached_command[0] not in BRC_COMMANDS:
+                raise error.CompilerError(None, "Logic error: Jumps solution is in par with problem")
+            
+            jump_seq = get_jump_sequence(section.jump_to, jump_instruction)
+
+            if len(jump_seq) != jump_len:
+                raise error.CompilerError(None, "Logic error: Jump sequence lenght does not match jump lenght")
+
+            for instr in jump_seq:
+                new_program.append(Line(line_index_in_file=jump_instruction.line_index_in_file, line=instr, physical_adress=current_adress))
+                current_adress += 1
+
+        for _ in range(buffer):
+            new_program.append(Line(line_index_in_file=None, line=fill, physical_adress=current_adress))
+            current_adress += 1
+
+    return new_program, context
+
+def get_used_adresses(program):
+    used_adresses = {}
+    for line in program:
+        used_adresses[line.physical_adress] = line
+    return used_adresses
+
+def find_label_physical_adresses(program, solution, label_segments):
+    # crate dict of labels that has its physical adress in it
+    label_adresses = dict()
+
+    def find_key_by_value(value, dictionary):
+        return [k for k, v in dictionary.items() if v == value]
+    # todo
+    return label_adresses
+    
+
         
 def solve_adresses(program, context: Context):
     program, context = mark_code_segments(program, context)
@@ -294,7 +383,7 @@ def solve_adresses(program, context: Context):
     logging.debug(f"problem: {problem}")
     logging.debug(f"translated problem: {translated_problem}")
 
-    starting_adress = 1000
+    starting_adress = 0
     solution = find_adresses(translated_problem, starting_adress)
 
     if solution:
@@ -302,9 +391,14 @@ def solve_adresses(program, context: Context):
         for i, section in enumerate(solution):
             logging.debug(f"Section {i}: {section}")
         context.solved_sections = solution
+        program, context = find_physical_adresses(program, solution, context)
+
+        context.used_addresses = get_used_adresses(program)
+        context.physical_adresses = find_label_physical_adresses(program, solution, label_segments)
+
+        return program, context
     else:
         logging.debug(f"No solution found")
         raise error.CompilerError(None, "No solution found - you can add nop instructions to make the problem solveable, You can increase the buffer size or increase the timeout or turn off adress optimization")
     
-    return program, context
 

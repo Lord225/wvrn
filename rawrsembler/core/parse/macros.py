@@ -51,7 +51,12 @@ def wrap_line(newline, line: Line, expanded_command):
     expanstion = line.expanded_command if 'expanded_command' in line else list()
     expanstion = deepcopy(expanstion)
     expanstion.append(expanded_command)
-    return Line(newline, line_index_in_file=line.line_index_in_file, is_macro_expanded=True, expanded_command=expanstion)
+    # line = Line(newline, line_index_in_file=line.line_index_in_file, is_macro_expanded=True, expanded_command=expanstion)
+    line = Line(**line.copy())
+    line.line = newline
+    line.is_macro_expanded = True
+    line.expanded_command = expanstion
+    return line
 
 def expand_macros_recurent(program, context: Context, limit, expanded_indexes, macro_stack=None):
     if limit == 0:

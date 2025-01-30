@@ -1,29 +1,8 @@
-#define HELLO_WORLD
-
-#ifdef HELLO_WORLD
+// TODO DEBUG
 
 .ENTRY
     nop
 LABEL:
     nop
-    nop
-    nop
     jmp LABEL
-    nop
-    nop
-    jmp LABEL2
-    nop
-    nop
     jmp LABEL
-LABEL2:
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-#endif
-
-
-    

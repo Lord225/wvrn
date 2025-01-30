@@ -24,6 +24,7 @@ def fill_empty_addresses(program, context: Context):
 
     fill = fill_prog[0]
 
+
     lines_by_addresses = {line.physical_adress:line for line in program}
     last_address = max(lines_by_addresses.keys())
     first_address = min(lines_by_addresses.keys())

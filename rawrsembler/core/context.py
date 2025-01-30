@@ -3,10 +3,10 @@ from core.error import ProfileLoadError
 
 from typing import TYPE_CHECKING
 
-from core.adress_solver.adress_solver import SolutionSection
 if TYPE_CHECKING:
     import core.profile.profile as profile
     from core.parse.jumps import SectionMeta
+    from core.adress_solver.adress_solver import SolutionSection
 
 
 class Context:
@@ -52,7 +52,7 @@ class Context:
         # dict of sections in form {'section_name': SectionMeta}
         self.sections: 'Dict[str, SectionMeta]' = dict()
 
-        self.solved_sections: list[SolutionSection] = list()
+        self.solved_sections: 'list[SolutionSection]' = list()
 
         # unused
         self.chunk_adreses = dict() 
