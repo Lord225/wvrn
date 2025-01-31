@@ -243,6 +243,38 @@ base["CPU"]["MACROS"]["jmp"] = {
     ]
 }
 
+# je r1 r2 LABEL 
+# jne 
+# jg
+# jge
+# jl
+# jle
+# jz
+
+# TODO
+base["CPU"]["MACROS"]["je"] = {
+    "pattern": "je {src1:token} {src2:token} {addr:token}",
+    "process": {},
+    "expansion": [
+        "lda {src1}",
+        "sub {src2}",
+        "brc zero {addr}"
+    ]
+}
+
+base["CPU"]["MACROS"]["jne"] = {
+    "pattern": "jne {src1:token} {src2:token} {addr:token}",
+    "process": {},
+    "expansion": [
+        "lda {src1}",
+        "sub {src2}",
+        "brc nzero {addr}"
+    ]
+}
+
+
+
+
 # Load immediate values from JSON
 with open("./wvrn/imms.json") as f:
     imms = json.load(f)

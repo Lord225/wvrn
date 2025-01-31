@@ -631,6 +631,15 @@
                     "brc true {addr}"
                 ]
             },
+            "je": {
+                "pattern": "je {src1:token} {src2:token} {addr:token}",
+                "process": {},
+                "expansion": [
+                    "lda {src1}",
+                    "sub {src2}",
+                    "brc zero {addr}"
+                ]
+            },
             "lim 0": {
                 "pattern": "lim 0",
                 "process": {},
