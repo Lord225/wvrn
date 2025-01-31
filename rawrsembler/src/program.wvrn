@@ -1,4 +1,4 @@
 .ENTRY 1000
 LABEL:
     nop 
-    je r0 r1 LABEL 
+    je r0 r1 LABEL

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-data = json.load(open('solutions.json'))
+data = json.load(open('./imms-generator/solutions-16bit.json'))
 x = list(map(int, data.keys()))
 
 y = [len(v) for v in data.values()]
