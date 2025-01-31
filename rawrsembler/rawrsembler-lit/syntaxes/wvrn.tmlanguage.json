@@ -26,11 +26,15 @@
       "name": "keyword.control.directive.conditional"
     },
     {
-      "match": "\\s*(#)(define|ifdef|ifndef|data|macro|endmacro|endif)",
+      "match": "\\s*(#)(define|ifdef|ifndef|data|macro|endmacro|endif|debug)",
       "name": "keyword.control"
     },
     {
       "match": "(?:(?<=#ifdef)|(?<=#ifndef)|(?<=#data)|(?<=#macro)|(?<=#endmacro)|(?<=#profile)|(?<=#endif))\\s(\\w+)\\b",
+      "name": "variable.named"
+    },
+    {
+      "match": "(?<=#debug)\\s(\\w+\\s*)+\\b",
       "name": "variable.named"
     },
     {

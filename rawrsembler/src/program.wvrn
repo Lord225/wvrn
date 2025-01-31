@@ -1,4 +1,8 @@
 .ENTRY
-#debug Hello World
-    lim 0
-#debug Goodbye World
+    nop
+LABEL:
+    nop
+#debug dump_ram
+    jmp LABEL //% test
+    nop
+    nop
