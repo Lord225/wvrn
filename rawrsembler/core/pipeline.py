@@ -41,9 +41,40 @@ def make_preproces_pipeline() -> List[Tuple[str, Callable]]:
             ('apply macros', preprocesor.macros.apply_all_macros),
             ('find meta', preprocesor.meta.get_metadata),
             ('remove preprocesor cmds', preprocesor.meta.remove_known_preprocesor_instructions),
-            
-            #('tokenize lines', parse.tokenize.tokenize)
+        ]
+    return pipeline
 
+def make_preproces_string_load_pipeline() -> List[Tuple[str, Callable]]:
+    """
+    Pipieline that is responsible for loading and preprocesing data.
+    Input:
+    * Path to file
+    Output:
+    * List of line obj
+       - `line_index_in_file` - line inside the file
+       - `line` - str of preprocessed lines of code without comments or preprocesing instructions
+    * Context dict
+       - `const` - dict of consts and its values
+       - `data` - dict of adresses and its values
+       - `debug` - list of debug lines obj's (these objs contains `line_index_in_file` field and `line` field)
+       - `defs` - list of definitions (`#define` without values)
+       - `entry` - dict of entrypoints with coresponding labels and offsets
+       - `macros` - dict of macros
+       - `profile_name` - name of profile
+    """
+    pipeline = \
+        [
+            ('load', load.loading.load_from_string),
+            ('strip data', load.loading.strip),
+            ('remove comments', load.comments.remove_comments),
+            ('remove empty lines', load.loading.remove_empty_lines),
+            ('solve defs', preprocesor.definitions.definition_solver),
+            ('remove defs', preprocesor.definitions.remove_definitions),
+            ('apply consts', preprocesor.definitions.apply_consts),
+            ('find macros', preprocesor.macros.find_macros),
+            ('apply macros', preprocesor.macros.apply_all_macros),
+            ('find meta', preprocesor.meta.get_metadata),
+            ('remove preprocesor cmds', preprocesor.meta.remove_known_preprocesor_instructions),
         ]
     return pipeline
 
@@ -76,10 +107,11 @@ def make_parser_pipeline() -> List[Tuple[str, Callable]]:
             ('tokenize lines', parse.tokenize.tokenize),
             ('find sections', parse.jumps.find_sections),
             ('find labels', parse.jumps.find_labels),
-            
             ('find commands', parse.match_commands.find_commands),
+            ('add debug data', parse.debug_heades.add_debug_metadata),
             ('generate values', parse.generate.generate),
-            # ('test', parse.solve_sections.solve_sections),
+            ('add debug logs', parse.debug_heades.add_debug_command_logging),
+            # ('test', parse.solve_sections.solve_sections), # solving sections is delegated to wvrn solver
         ]
     return pipeline
 

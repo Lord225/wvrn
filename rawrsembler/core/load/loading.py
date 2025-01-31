@@ -9,6 +9,12 @@ def load_raw(path: str, context: Context):
     Program = [line for line in program if len(line) != 0]
     return Program
 
+def load_from_string(string: str, context: Context):
+    program = string.split("\n")
+    program = [Line(line, line_index_in_file=i+1) for i, line in enumerate(program)]
+    Program = [line for line in program if len(line) != 0]
+    return Program
+
 def load_lines(lines: list, context: Context):
     program = [Line(line, line_index_in_file=i+1) for i, line in enumerate(lines)]
     Program = [line for line in program if len(line) != 0]

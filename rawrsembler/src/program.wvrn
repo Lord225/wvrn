@@ -1,11 +1,4 @@
-; Entry point
 .ENTRY
-; opcodes
-   nop
-; labels
-LABEL:
-   nop
-; jumps
-   jmp LABEL ;% this jump
-; pseudoinstructions
-   lim 69
+#debug Hello World
+    lim 0
+#debug Goodbye World

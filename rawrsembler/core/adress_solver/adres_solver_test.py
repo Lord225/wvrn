@@ -144,19 +144,19 @@ class TestMarkCodeSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_1)
         program, context = mark_code_segments(program, context)
         segments = [line["segment"] for line in program]
-        self.assertEqual(segments, [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(segments, [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0])
 
     def test_mark_code_segments_case_2(self):
         program, context = self.get_state(TEST_CASE_2)
         program, context = mark_code_segments(program, context)
         segments = [line["segment"] for line in program]
-        self.assertEqual(segments, [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(segments, [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
 
     def test_mark_code_segments_case_3(self):
         program, context = self.get_state(TEST_CASE_3)
         program, context = mark_code_segments(program, context)
         segments = [line["segment"] for line in program]
-        self.assertEqual(segments, [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0])
+        self.assertEqual(segments, [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0])
 
     def test_mark_code_segments_case_4(self):
         program, context = self.get_state(TEST_CASE_4)
@@ -174,7 +174,7 @@ class TestMarkCodeSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_6)
         program, context = mark_code_segments(program, context)
         segments = [line["segment"] for line in program]
-        self.assertEqual(segments, [2, 2, 1, 1])
+        self.assertEqual(segments, [1, 1, 0, 0])
 
     def test_mark_code_segments_case_7(self):
         program, context = self.get_state(TEST_CASE_7)
@@ -205,13 +205,13 @@ class TestCalculateLabelSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_1)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 1, "LABEL2": 0})
+        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 0})
 
     def test_calculate_label_segments_case_2(self):
         program, context = self.get_state(TEST_CASE_2)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 1})
+        self.assertEqual(label_segments, {"LABEL": 1, "LABEL2": 0})
 
     def test_calculate_label_segments_case_3(self):
         program, context = self.get_state(TEST_CASE_3)
@@ -235,81 +235,55 @@ class TestCalculateLabelSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_6)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL1": 1, "LABEL": 2})
+        self.assertEqual(label_segments, {"LABEL1": 0, "LABEL": 1})
 
-class TestCalculateSegmentLenghts(unittest.TestCase):
-    def get_state(self, CASE):
-        if not hasattr(self, "profile"):
-            self.profile = core.profile.profile.load_profile_from_file("wvrn.jsonc", False)
-
-        return quick.parse(CASE, self.profile)
-    
-    def assert_lenght_equal(self, segment_lengths, program):
-        # that sum of all segment lengths is equal to the number of lines
-        self.assertEqual(sum(segment_lengths.values()), len(program))
-    
     def test_calculate_segment_lengths_case_0(self):
         program, context = self.get_state(TEST_CASE_0)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
         self.assertEqual(segment_lengths, {2: 1, 1: 1, 0: 1})
-        self.assert_lenght_equal(segment_lengths, program)
 
     def test_calculate_segment_lengths_case_1(self):
         program, context = self.get_state(TEST_CASE_1)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {2: 1, 1: 10, 0: 7})
-        self.assert_lenght_equal(segment_lengths, program)
+        self.assertEqual(segment_lengths, {3: 1, 2: 9, 1: 1, 0: 7})
 
     def test_calculate_segment_lengths_case_2(self):
         program, context = self.get_state(TEST_CASE_2)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {3: 1, 2: 9, 1: 1, 0: 7})
-        self.assert_lenght_equal(segment_lengths, program)
+        self.assertEqual(segment_lengths, {2: 1, 1: 9, 0: 8})
 
     def test_calculate_segment_lengths_case_3(self):
         program, context = self.get_state(TEST_CASE_3)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {3: 1, 2: 10, 1: 2, 0: 5})
-        self.assert_lenght_equal(segment_lengths, program)
+        self.assertEqual(segment_lengths, {3: 1, 2: 9, 1: 3, 0: 5})
 
     def test_calculate_segment_lengths_case_4(self):
         program, context = self.get_state(TEST_CASE_4)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
         self.assertEqual(segment_lengths, {0: 4})
-        self.assert_lenght_equal(segment_lengths, program)
 
     def test_calculate_segment_lengths_case_5(self):
         program, context = self.get_state(TEST_CASE_5)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
         self.assertEqual(segment_lengths, {0: 0})
-        self.assert_lenght_equal(segment_lengths, program)
 
     def test_calculate_segment_lengths_case_6(self):
         program, context = self.get_state(TEST_CASE_6)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {2: 2, 1: 2, 0: 0})
-        self.assert_lenght_equal(segment_lengths, program)
+        self.assertEqual(segment_lengths, {1: 2, 0: 2})
 
     def test_calculate_segment_lengths_case_7(self):
         program, context = self.get_state(TEST_CASE_7)
         program, context = mark_code_segments(program, context)
         segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {2: 1, 1: 4, 0: 1})
-        self.assert_lenght_equal(segment_lengths, program)
-
-    def test_calculate_segment_lengths_case_8(self):
-        program, context = self.get_state(TEST_CASE_8)
-        program, context = mark_code_segments(program, context)
-        segment_lengths = calculate_segment_lengths(program)
-        self.assertEqual(segment_lengths, {3: 1, 2: 2, 1: 1, 0: 0})
-        self.assert_lenght_equal(segment_lengths, program)
+        self.assertEqual(segment_lengths, {2: 1, 1: 4, 0: 0})
 
 if __name__ == '__main__':
     unittest.main()

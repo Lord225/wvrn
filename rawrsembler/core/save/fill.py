@@ -26,8 +26,8 @@ def fill_empty_addresses(program, context: Context):
 
 
     lines_by_addresses = {line.physical_adress:line for line in program}
-    last_address = max(lines_by_addresses.keys())
-    first_address = min(lines_by_addresses.keys())
+    last_address = max(lines_by_addresses.keys()) if len(lines_by_addresses) > 0 else 0
+    first_address = min(lines_by_addresses.keys()) if len(lines_by_addresses) > 0 else 0
     
 
     new_program = list()

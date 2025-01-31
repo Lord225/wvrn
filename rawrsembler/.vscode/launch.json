@@ -5,7 +5,7 @@
             "name": "Debug Rawrsemblerr",
             "type": "debugpy",
             "request": "launch",
-            "program": "./compile.py",
+            "program": "./rawr.py",
             "console": "integratedTerminal",
             "args": [
                 "--debug", "-i", "./src/program.wvrn"
