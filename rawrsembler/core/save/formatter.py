@@ -99,7 +99,10 @@ def encode_argument(layout, name, val):
 def get_py(program, context: Context):
     """Returns program line as dict"""
     parsed = program['parsed_command']
-    meta = {'mached': program['mached_command']}
+    meta = {'mached': {
+        "opcode": program['mached_command'][0],
+        "args": program['mached_command'][1]
+    }}
     profile: Profile = context.get_profile()
     layouts = profile.arguments
 
@@ -111,7 +114,7 @@ def get_py(program, context: Context):
         for name, val in args.items():
             encoded.append(encode_argument(layout, name, val))
     value = as_values(encoded, profile.adressing.bin_len)
-    return {'data':parsed, 'meta':meta, 'adress': program['physical_adress'], 'encoded': encoded, 'value':value}
+    return {'data':parsed, 'meta':meta, 'adress': program['physical_adress'], 'encoded': ''.join(encoded), 'value':value}
 
 
 def get_bin(program, context: Context):
