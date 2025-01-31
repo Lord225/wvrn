@@ -6,3 +6,4 @@ out/*.bin
 *.pyc
 output.txt
 cache
+.pytest_cache
