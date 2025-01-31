@@ -20,6 +20,9 @@ def remove_comments(lines: List[Line], context: Context):
                     line.comment = line.line[pos+3:].strip()
                 else:
                     line.comment = None
+                pos = line.line.find(";%")
+                if pos > 0:
+                    line.comment = line.line[pos+2:].strip()
             else:
                 line.comment = None
                 
