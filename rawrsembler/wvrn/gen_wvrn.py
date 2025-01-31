@@ -38,7 +38,71 @@ base = {
             ["flg", "2"],
             ["seg", "3"],
             ["tr1", "4"],
-            ["tr2", "5"]
+            ["tr2", "5"],
+            [
+                "r0",
+                "0"
+            ],
+            [
+                "r1",
+                "1"
+            ],
+            [
+                "r2",
+                "2"
+            ],
+            [
+                "r3",
+                "3"
+            ],
+            [
+                "r4",
+                "4"
+            ],
+            [
+                "r5",
+                "5"
+            ],
+            [
+                "r6",
+                "6"
+            ],
+            [
+                "r7",
+                "7"
+            ],
+            [
+                "r8",
+                "8"
+            ],
+            [
+                "r9",
+                "9"
+            ],
+            [
+                "r10",
+                "10"
+            ],
+            [
+                "r11",
+                "11"
+            ],
+            [
+                "r12",
+                "12"
+            ],
+            [
+                "r13",
+                "13"
+            ],
+            [
+                "r14",
+                "14"
+            ],
+            [
+                "r15",
+                "15"
+            ]
         ],
 
         "KEYWORDS":{
@@ -180,7 +244,7 @@ base["CPU"]["MACROS"]["jmp"] = {
 }
 
 # Load immediate values from JSON
-with open("./rawrsembler/wvrn/imms.json") as f:
+with open("./wvrn/imms.json") as f:
     imms = json.load(f)
 
 # Generate macros for immediate values
@@ -495,8 +559,6 @@ base["CPU"]["MACROS"]["store"] = {
     ]
 }
 
-
-
 # Save the updated base configuration to a file
-with open("./rawrsembler/wvrn/wvrn.jsonc", "w") as f:
+with open("./wvrn/wvrn.jsonc", "w") as f:
     json.dump(base, f, indent=4)
