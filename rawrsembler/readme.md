@@ -1,5 +1,5 @@
 # 🐾 Rawrsembler 🐾
-Rawrsembler is a purr-ssembler for highly nefarius CPUs, providing a custom assembly language for advanced and obscure architectures. It's paws-itively perfect for those who want to scratch beneath the surface of low-level coding!
+Rawrsembler is a purrstatic assembler for highly nefarius CPUs, providing a custom assembly language for this obscure architecture. It's paws-itively perfect for those who want to scratch beneath the surface of low-level coding!
 
 # Features
 ## 🐾 Multi-Format File Saving
