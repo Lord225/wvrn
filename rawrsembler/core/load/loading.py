@@ -1,9 +1,11 @@
+import logging
 from typing import List
 from core.context import Context
 from .base import *
 
 def load_raw(path: str, context: Context):
     program = list()
+    logging.info(f"Loading file {path}")
     with open(path, "r") as file:
         program = [Line(line, line_index_in_file=i+1) for i, line in enumerate(file)]
     Program = [line for line in program if len(line) != 0]

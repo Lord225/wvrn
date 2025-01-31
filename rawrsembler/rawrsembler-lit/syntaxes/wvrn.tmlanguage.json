@@ -54,7 +54,7 @@
       "name": "entity.name.tag"
     },
     {
-      "match": "\\b(sta|lda|lda\\.f|add|add\\.f|addi|addi\\.f|nand|nand\\.f|ld|ld\\.f|st|st\\.f|lim)\\b",
+      "match": "\\b(sta|lda|lda\\.f|add|add\\.f|addi|addi\\.f|nand|nand\\.f|ld|ld\\.f|st|st\\.f|lim|nop|mov|swa|not|and|or|xor|andi|ori|xori|load|store)\\b",
       "name": "keyword.instruction"
     },
     {

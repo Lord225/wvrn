@@ -1,8 +1,13 @@
-.ENTRY
-    nop
+.ENTRY 1000
+    addi 1
 LABEL:
-    nop
-#debug dump_ram
-    jmp LABEL //% test
-    nop
-    nop
+    addi 1
+    addi 1
+    jmp LABEL   ;% first
+    addi 1
+    addi 1
+    jmp LABEL2 ;% second
+    addi 1
+LABEL2:
+    addi 1
+    jmp LABEL ;% third
