@@ -8,10 +8,10 @@ fi
 # current folder
 root=$(dirname "$(readlink -f "$0")")
 
-# check if # lords-asm-for-mc-begin comment exists in $profile, if so remove everything between # lords-asm-for-mc-begin and # lords-asm-for-mc-end
-if grep -q "# lords-asm-for-mc-begin" "$HOME/.bashrc"; then
+# check if # rawrsembler-begin comment exists in $profile, if so remove everything between # rawrsembler-begin and # rawrsembler-end
+if grep -q "# rawrsembler-begin" "$HOME/.bashrc"; then
   echo "Usuwanie poprzedniej instalacji 'lords-asm-for-mc' z $HOME/.bashrc"
-  sed -i '/# lords-asm-for-mc-begin/,/# lords-asm-for-mc-end/d' "$HOME/.bashrc"
+  sed -i '/# rawrsembler-begin/,/# rawrsembler-end/d' "$HOME/.bashrc"
 fi
 
 # create a virtual environment
@@ -27,25 +27,25 @@ echo "Instalowanie zależności 'lords-asm-for-mc' w $root przy użyciu pip"
 pip install -r "$root/requirements.txt"
 deactivate
 
-# add # lords-asm-for-mc-begin comment to $profile
-echo "# lords-asm-for-mc-begin" >> "$HOME/.bashrc"
-echo "# Nie edytuj, nie usuwaj ani nie zmieniaj tych komentarzy; są używane przez 'lords-asm-for-mc' do instalacji i dezinstalacji" >> "$HOME/.bashrc"
+# add # rawrsembler-begin comment to $profile
+echo "# rawrsembler-begin" >> "$HOME/.bashrc"
+echo "# Nie edytuj, nie usuwaj ani nie zmieniaj tych komentarzy; są używane przez 'rawrsembler' do instalacji i dezinstalacji" >> "$HOME/.bashrc"
 
 # add alias to compile.py
 compile="$root/compile.py"
-echo "function lor { source \"$venv_dir/bin/activate\" && \$@ | python3 \"$compile\" \"\$@\"; deactivate; }" >> "$HOME/.bashrc"
+echo "function rawr { source \"$venv_dir/bin/activate\" && \$@ | python3 \"$compile\" \"\$@\"; deactivate; }" >> "$HOME/.bashrc"
 
-# add alias to send.py
-send="$root/tools/send.py"
-echo "function rfsend { source \"$venv_dir/bin/activate\" && \$@ | python3 \"$send\" \"\$@\"; deactivate; }" >> "$HOME/.bashrc"
+# Add alias to get-wvrn-bin.py
+get_wvrn="$root/tools/get-wvrn-bin.py"
+echo "function to-wve { source \"$venv_dir/bin/activate\" && \$@ | python3 \"$get_wvrn\" \"\$@\"; deactivate; }" >> "$HOME/.bashrc"
 
-echo "Alias 'lor' i 'rfsend' utworzony w $HOME/.bashrc"
+echo "Alias 'rawr' i 'get_wvrn' utworzony w $HOME/.bashrc"
 
 # add $root to the PATH, if not already there
 if [[ ":$PATH:" != *":$root:"* ]]; then
   echo "export PATH=\"\$PATH:$root\"" >> "$HOME/.bashrc"
 fi
 
-echo "Dodano '$root' do ścieżki (PATH)"
+echo "Dodano '$root' do PATH"
 
 echo "Gotowe"
