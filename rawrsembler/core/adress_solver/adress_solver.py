@@ -34,12 +34,16 @@ def mark_code_segments(program, context):
 
     labels = context.labels.values()  # dict of indexes of labels
     labels = [-len(program) + i for i in labels]
+    prev_section = None
 
     for i in range(len(program)):
         line = program[-i - 1]
+        section = line.section
 
-        if line.mached_command[0] in BRC_COMMANDS or -i in labels:
+        if line.mached_command[0] in BRC_COMMANDS or -i in labels or prev_section != section:
             segment_id += 1
+            if section != prev_section:
+                prev_section = section
 
         line["segment"] = segment_id
 
@@ -56,6 +60,7 @@ def calculate_label_segments(program, context):
         if i in labels.values():
             for label in find_key_by_value(i, labels):
                 label_segments[label] = line.segment
+
     if len(program) > 0:
         for label in labels:
             if label not in label_segments:
@@ -82,6 +87,7 @@ def calculate_segment_lengths(program):
 class ProblemSegmentLabels:
     length: int
     segment_id: int
+    adress_constraint: Optional[int] = None
     jump_label: Optional[int] = None
 
 
@@ -89,6 +95,7 @@ class ProblemSegmentLabels:
 class ProblemSegmentIndexes:
     length: int
     segment_id: int
+    adress_constraint: Optional[int] = None
     jump_index: Optional[int] = None
 
 
@@ -96,30 +103,56 @@ def create_problem_layout(
     program, segment_lengths, label_segments
 ) -> list[ProblemSegmentLabels]:
     problem = []
+    current_section = None
+    current_section_adress_constraint = None
     for i in range(len(program)):
         i_next = i + 1
 
         line = program[i]
         next_line = program[i_next] if i_next < len(program) else None
 
+        if line.section.name != current_section:
+            current_section = line.section.name
+            current_section_adress_constraint = line.section.offset
+
         if next_line is None or line.segment != next_line.segment:
             if line.mached_command[0] in BRC_COMMANDS:
                 addr = line.mached_command[1]["addr"]
-                problem.append(
-                    ProblemSegmentLabels(
-                        length=segment_lengths[line.segment],
-                        segment_id=line.segment,
-                        jump_label=label_segments[addr],
+                if current_section_adress_constraint is not None:
+                    problem.append(
+                        ProblemSegmentLabels(
+                            length=segment_lengths[line.segment],
+                            segment_id=line.segment,
+                            jump_label=label_segments[addr],
+                            adress_constraint=current_section_adress_constraint,
+                        )
                     )
-                )
+                    current_section_adress_constraint = None
+                else:
+                    problem.append(
+                        ProblemSegmentLabels(
+                            length=segment_lengths[line.segment],
+                            segment_id=line.segment,
+                            jump_label=label_segments[addr],
+                        )
+                    )
             else:
-                problem.append(
-                    ProblemSegmentLabels(
-                        length=segment_lengths[line.segment],
-                        segment_id=line.segment,
+                if current_section_adress_constraint is not None:
+                    problem.append(
+                        ProblemSegmentLabels(
+                            length=segment_lengths[line.segment],
+                            segment_id=line.segment,
+                            adress_constraint=current_section_adress_constraint,
+                        )
                     )
-                )
-
+                    current_section_adress_constraint = None
+                else:
+                    problem.append(
+                        ProblemSegmentLabels(
+                            length=segment_lengths[line.segment],
+                            segment_id=line.segment,
+                        )
+                    )
     return problem
 
 
@@ -130,13 +163,16 @@ def translate_problem_layout(
     for instr in problem:
         if instr.jump_label is None:
             translated_problem.append(
-                ProblemSegmentIndexes(length=instr.length, segment_id=instr.segment_id)
+                ProblemSegmentIndexes(length=instr.length, 
+                                      segment_id=instr.segment_id,
+                                      adress_constraint=instr.adress_constraint)
             )
         else:
             translated_problem.append(
                 ProblemSegmentIndexes(
                     length=instr.length - 1,
                     segment_id=instr.segment_id,
+                    adress_constraint=instr.adress_constraint,
                     jump_index=next(
                         i
                         for i, p in enumerate(problem)
@@ -178,6 +214,8 @@ def try_solve_adresses(
     def calc_max_adress(layout: list[ProblemSegmentIndexes]):
         max_adress = 0
         for instr in layout:
+            if instr.adress_constraint is not None:
+                max_adress = instr.adress_constraint
             if instr.jump_index is None:
                 max_adress += instr.length
             else:
@@ -208,25 +246,33 @@ def try_solve_adresses(
     for i in range(num_sectors):
         solver.add(And(addresses[i] >= min_adress, addresses[i] < max_adress))
 
-    # set lower up bound for adresses
-    current_adress = starting_adress
-    for i, instr in enumerate(problem):
-        solver.add(addresses[i] <= current_adress)
-        # print(f"Instruction {i} has adress atleast {current_adress}")
-        if instr.jump_index is None:
-            current_adress += instr.length
-        else:
-            current_adress += instr.length + MAX_JUMP_LENGHT
+    # set upper bound for addresses
+    # current_adress = starting_adress
+    # for i, instr in enumerate(problem):
+    #     if instr.adress_constraint is not None:
+    #         solver.add(addresses[i] <= instr.adress_constraint)
+    #         current_adress = instr.adress_constraint
+    #     else:
+    #         solver.add(addresses[i] <= current_adress)
+    #     # print(f"Instruction {i} has address at most {current_adress}")
+    #     if instr.jump_index is None:
+    #         current_adress += instr.length
+    #     else:
+    #         current_adress += instr.length + MAX_JUMP_LENGHT
 
-    # set lower low bound for adresses
-    current_adress = starting_adress
-    for i, instr in enumerate(problem):
-        solver.add(addresses[i] >= current_adress)
-        # print(f"Instruction {i} has adress atmost {current_adress}")
-        if instr.jump_index is None:
-            current_adress += instr.length
-        else:
-            current_adress += instr.length + MIN_JUMP_LENGHT
+    # # set lower bound for addresses
+    # current_adress = starting_adress
+    # for i, instr in enumerate(problem):
+    #     if instr.adress_constraint is not None:
+    #         solver.add(addresses[i] >= instr.adress_constraint)
+    #         current_adress = instr.adress_constraint
+    #     else:
+    #         solver.add(addresses[i] >= current_adress)
+    #     # print(f"Instruction {i} has address at least {current_adress}")
+    #     if instr.jump_index is None:
+    #         current_adress += instr.length
+    #     else:
+    #         current_adress += instr.length + MIN_JUMP_LENGHT
 
     for i in range(num_sectors):
         solver.add(And(bufferNops[i] >= 0, bufferNops[i] <= buffer))
@@ -240,9 +286,18 @@ def try_solve_adresses(
             solver.add(lengths[i] == (lengths_map(addresses[instr.jump_index]) + instr.length + bufferNops[i]))  # type: ignore
             label_positions[i] = instr.jump_index  # Store the label index for the jump
 
-    solver.add(addresses[0] == starting_adress)
+    if problem[0].adress_constraint is not None:
+        solver.add(addresses[0] == problem[0].adress_constraint)
+    else:
+        solver.add(addresses[0] == starting_adress)
+    # For every consecutive pair of segments, enforce proper ordering.
+    # If the next segment is free, enforce exact contiguity.
+    # If the next segment is fixed, allow a gap (but no overlap).
     for i in range(num_sectors - 1):
-        solver.add(addresses[i + 1] == addresses[i] + lengths[i])
+        if problem[i + 1].adress_constraint is None:
+            solver.add(addresses[i + 1] == addresses[i] + lengths[i])
+        else:
+            solver.add(addresses[i + 1] == problem[i + 1].adress_constraint)
 
     if timeout:
         solver.set(timeout=timeout)
@@ -390,6 +445,11 @@ def find_label_physical_adresses(solution, problem, label_segments):
             )
     return label_adresses
 
+def get_start_adress(context):
+    # find the section with lowest offset it will be the starting adress
+    sections = context.sections.values()
+    start_adress = min(sections, key=lambda x: x.offset).offset
+    return start_adress
 
 def solve_adresses(program, context: Context):
     program, context = mark_code_segments(program, context)
@@ -403,10 +463,7 @@ def solve_adresses(program, context: Context):
     logging.debug(f"problem: {problem}")
     logging.debug(f"translated problem: {translated_problem}")
 
-    for i, line in enumerate(program):
-        logging.debug(i, line.segment)
-
-    starting_adress = 0
+    starting_adress = get_start_adress(context)
     solution = find_adresses(translated_problem, starting_adress)
 
     if solution:
@@ -426,5 +483,7 @@ def solve_adresses(program, context: Context):
         logging.debug(f"No solution found")
         raise error.CompilerError(
             None,
-            "No solution found - you can add nop instructions to make the problem solveable, You can increase the buffer size or increase the timeout or turn off adress optimization",
+            "Adress resolving failed, You can increase the \
+            buffer size or increase the timeout or turn off \
+            adress optimization. Check if sections are not overrlaping.",
         )

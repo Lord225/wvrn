@@ -138,7 +138,7 @@ class TestMarkCodeSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_0)
         program, context = mark_code_segments(program, context)
         segments = [line["segment"] for line in program]
-        self.assertEqual(segments, [2, 1, 0])
+        self.assertEqual(segments, [3, 2, 1])
 
     def test_mark_code_segments_case_1(self):
         program, context = self.get_state(TEST_CASE_1)
@@ -199,25 +199,25 @@ class TestCalculateLabelSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_0)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 1, "LABEL2": 0, "LABEL3": 0})
+        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 1, "LABEL3": 1})
 
     def test_calculate_label_segments_case_1(self):
         program, context = self.get_state(TEST_CASE_1)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 0})
+        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 1})
 
     def test_calculate_label_segments_case_2(self):
         program, context = self.get_state(TEST_CASE_2)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 1, "LABEL2": 0})
+        self.assertEqual(label_segments, {"LABEL": 3, "LABEL2": 2})
 
     def test_calculate_label_segments_case_3(self):
         program, context = self.get_state(TEST_CASE_3)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL": 2, "LABEL2": 0})
+        self.assertEqual(label_segments, {"LABEL": 3, "LABEL2": 1})
 
     def test_calculate_label_segments_case_4(self):
         program, context = self.get_state(TEST_CASE_4)
@@ -235,7 +235,7 @@ class TestCalculateLabelSegments(unittest.TestCase):
         program, context = self.get_state(TEST_CASE_6)
         program, context = mark_code_segments(program, context)
         label_segments = calculate_label_segments(program, context)
-        self.assertEqual(label_segments, {"LABEL1": 0, "LABEL": 1})
+        self.assertEqual(label_segments, {'LABEL': 2, 'LABEL1': 1})
 
     def test_calculate_segment_lengths_case_0(self):
         program, context = self.get_state(TEST_CASE_0)

@@ -87,6 +87,13 @@ def find_sections(program, context: Context):
         section = check_for_new_section(line_obj)
 
         if section is not None:
+            # check for override in keysections
+            if current_section.name in keysections:
+                context.sections[current_section.name] = keysections[current_section.name]
+                context.sections[current_section.name].override(current_section)
+            else:
+                context.sections[current_section.name] = current_section
+                
             current_section = section
 
             if current_section.name in keysections:

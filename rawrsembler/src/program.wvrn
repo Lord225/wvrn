@@ -1,4 +1,21 @@
-.ENTRY 1000
+.ENTRY
+nop
 LABEL:
-    nop 
-    je r0 r1 LABEL
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+brc true LABEL
+LABEL2:
+nop
+nop
+nop
+nop
+nop
+nop
+nop
