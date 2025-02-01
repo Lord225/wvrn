@@ -109,3 +109,8 @@ code --install-extension ./rawrsembler-lit/rawrsembler-0.2.2.vsix
 ```
 Now go forth and assemble with the grace of a prowling cat! 🐱✨
 
+
+# Syntax
+
+Rawrsembler is specialized version of https://github.com/Lord225/Lord-s-asm-for-mc so it follows its convetions for preprocessor, labels and uses same parsing pipeline. 
+## Instructions
