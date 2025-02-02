@@ -4,3 +4,6 @@
 [submodule "lord-s-asm-for-mc"]
 	path = lord-s-asm-for-mc
 	url = https://github.com/Lord225/Lord-s-asm-for-mc
+[submodule "rawrsembler"]
+	path = rawrsembler
+	url = https://github.com/Lord225/rawrsembler
